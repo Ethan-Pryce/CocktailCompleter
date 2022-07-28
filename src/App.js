@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import Drink from './drink.js';
 import Cocktails from './cocktails.js'
@@ -22,9 +21,10 @@ function App() {
   const [recIngredients, setRecIng] = useState(myIngredients());
   const [showSelected, setShowSelected] = useState(false);
   //A hook for storing recipes for the completer box
-  const [completer, setCompleter] = useState([])
+  //const [completer, setCompleter] = useState([])
   const [showHelp, setHelp] = useState(false);
 
+  
   async function byName(name){
     let url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=";
     let result = await fetch(url + name);
