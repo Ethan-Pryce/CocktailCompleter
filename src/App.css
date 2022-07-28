@@ -44,16 +44,15 @@
 }
 
 .drinkList {
-  z-index: 2;
+  z-index: 4;
   width:100%;
   height:100%;
-  position: absolute;
-  left:0px;
-  top:0px;
   background-color: var(--background);
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
+  position: fixed;
+  top:0px
 }
 
 .drinkCozy{

@@ -295,7 +295,7 @@ function App() {
   function toggleSelected(){
     setHelp(false);
     setShowSelected(!showSelected);
-    //console.log(showSelected);
+    console.log(showSelected);
   }
 
   useEffect(() => {
@@ -331,18 +331,18 @@ function App() {
         <div className='infoBar'>
           <div className='infoBlock'>
             <div className='topper'><h3>Selected</h3></div>
-            <div className="flexList">{itemsSelected.map((sel) => <div className="selectedIng" onClick={() =>deselect(sel)}> {sel}</div>)}</div>
+            <div className="flexList">{itemsSelected.map((sel) => <div className="selectedIng" key={sel} onClick={() =>deselect(sel)}> {sel}</div>)}</div>
             </div>
           <div className='infoBlock'>
               <div className='topper'><h3>Completes a Reciepe</h3></div>
               <div className="flexList">
-              {Object.keys(missingOne).length ? ingredients.map((ing) => (combos(ing) > 0 ? <Ingredient name={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient> : null)) : null}
+              {Object.keys(missingOne).length ? ingredients.map((ing) => (combos(ing) > 0 ? <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient> : null)) : null}
               </div>
           </div>
         </div>
 
-        {ingredients.map((ing) => <Ingredient name={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>)}
-        {drinkList.map((drink) => <Drink name={drink}></Drink>)}
+        {ingredients.map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>)}
+        {drinkList.map((drink) => <Drink name={drink} key={drink}></Drink>)}
         {(showSelected && Object.keys(makable).length > 0 )  ? <Cocktails drinks={makable} close={toggleSelected}></Cocktails>
         : null}
         {showHelp ? <div className='helpBox' onClick={toggleHelp}>

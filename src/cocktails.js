@@ -8,7 +8,7 @@ import Drink from './drink.js';
     */
 function Cocktails(props) {
     return <div className='drinkList'>
-      {Object.keys(props.drinks).map((drink) => <Drink name={drink}></Drink>)}
+      {Object.keys(props.drinks).map((drink) => <Drink name={drink} key={drink}></Drink>)}
       <div className="closer" onClick={props.close}>&#10060;</div>
     </div>
 
