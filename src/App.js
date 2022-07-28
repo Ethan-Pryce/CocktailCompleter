@@ -324,7 +324,7 @@ function App() {
     <div className="App">
 
         <div className='topBar'>
-        <div id="showButton" className={Object.keys(makable).length > 0 ? 'topButton' : 'topButtonDisabled'} onClick={toggleSelected} >Show me the Drinks</div>
+        <div id="showButton" className={Object.keys(makable).length > 0 ? 'topButton' : 'topButtonDisabled'} onClick={toggleSelected} >Drinks</div>
         <div id="resetButton" className='topButton' onClick={reset} >Reset</div>
         <div id="questionButton" className='topButton' onClick={toggleHelp}>&#10067;</div>
         </div>
@@ -334,7 +334,7 @@ function App() {
             <div className="flexList">{itemsSelected.map((sel) => <div className="selectedIng" key={sel} onClick={() =>deselect(sel)}> {sel}</div>)}</div>
             </div>
           <div className='infoBlock'>
-              <div className='topper'><h3>Completes a Reciepe</h3></div>
+              <div className='topper'><h3>Completes a Recipe</h3></div>
               <div className="flexList">
               {Object.keys(missingOne).length ? ingredients.map((ing) => (combos(ing) > 0 ? <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient> : null)) : null}
               </div>

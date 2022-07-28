@@ -261,12 +261,12 @@ p {
 }
 
 .helpBox {
-  background-color: gray;
+  background-color: var(--ingredient-count);
   width: 400px;
-  position: absolute;
+  position: fixed;
   z-index: 3;
   top: 30vh;
-
+  filter:drop-shadow(1px 1px 1px gray);
 }
 
 @keyframes App-logo-spin {
@@ -276,4 +276,40 @@ p {
   to {
     transform: rotate(360deg);
   }
+}
+
+@media screen and (max-width:500px) {
+  .displayIng{
+    min-width:100px;
+    font-size: 13px;
+  }
+
+  .selectedIng{
+    min-width:100px;
+    font-size: 13px;
+  }
+
+
+  .topBar {
+    height: 40px;
+  }
+  .topButton, .topButtonDisabled{
+    font-size:medium;
+    line-height: 20px;
+
+  }
+
+  .infoBar{
+    top:40px;
+
+  }
+  
+  h3{
+    font-size: medium;
+  }
+
+  .helpBox{
+    width: 80%;
+  }
+
 }
