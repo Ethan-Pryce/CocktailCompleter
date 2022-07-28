@@ -21,7 +21,7 @@ function App() {
   const [recIngredients, setRecIng] = useState(myIngredients());
   const [showSelected, setShowSelected] = useState(false);
   //A hook for storing recipes for the completer box
-  //const [completer, setCompleter] = useState([])
+  const [completer, setCompleter] = useState([])
   const [showHelp, setHelp] = useState(false);
 
   
