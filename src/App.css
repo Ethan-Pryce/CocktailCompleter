@@ -1,5 +1,27 @@
+:root{
+  --background:#B3A394;
+  --background-top:#B3A394;
+  --ingredient:#943713;
+  --ingredient-count:#C77556;
+  --button:#859EAD;
+  --text:#F1E9DA;
+  --infobox:#959AB1;
+  user-select: none;
+  color:var(--text);
+}
+
 .App {
   text-align: center;
+  background-color: var(--background);
+  min-height: 100vh;
+  display: flex;
+  flex-direction:row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  padding-bottom: 50px;
 }
 
 .App-logo {
@@ -14,18 +36,238 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  
 }
 
 .App-link {
   color: #61dafb;
+}
+
+.drinkList {
+  z-index: 2;
+  width:100%;
+  height:100%;
+  position: absolute;
+  left:0px;
+  top:0px;
+  background-color: var(--background);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.drinkCozy{
+
+  height:min(200px, 40vw);
+  min-width: min(200px, 40vw);
+  word-break: keep-all;
+  
+  margin-left:21px;
+  margin-top: 21px;
+  z-index: 3;
+  display: inline-block;
+}
+
+.drinkSquare{
+  width:200px;
+  height: 200px;
+  background-size: cover;
+  background-color: var(--ingredient);
+
+  transition-duration: 1s;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.drinkSquare:hover {
+  width: 220px;
+  height:220px
+  
+}
+
+h2 {
+  font-size: 27px;
+  align-self: center;
+  -webkit-text-stroke-width: 1px;
+-webkit-text-stroke-color: black;
+}
+
+.displayIng {
+  margin-left: 5px;
+  margin-right: 5px;
+  width: 10%;
+  min-width: 200px;
+  background-color: var(--ingredient);
+  min-height: 40px;
+  margin-top: 5px;
+  font-size: 15px;
+  display:flex;
+  cursor: pointer;
+}
+
+.ingredient {
+  margin-left: 0px;
+  width:80%;
+  vertical-align: middle;
+  align-items:center;
+  display:flex;
+  justify-content: center;
+}
+
+.countIng{
+  display:flex;
+  float:right;
+  min-height: 40px;
+  min-width: 20%;
+  background-color: var(--ingredient-count);
+  vertical-align: middle;
+  align-items:center;
+  justify-content: center;
+}
+
+.recipeDiv {
+  position:absolute;
+  left: 35%;
+  top:25%;
+  background-color: gray;
+  width:600px;
+  height:400px;
+}
+
+.recipeDiv h2 {
+  display: inline;
+}
+
+.closer {
+  display: inline;
+  float:right;
+  cursor: pointer;
+
+}
+
+button {
+  width: 100%;
+  height: 10vh;
+}
+
+.topBar {
+  width: 100%;
+  height:69px;
+  background-color: var(--background-top);
+  display:flex;
+  justify-content: space-evenly;
+  position: sticky;
+  position: -webkit-sticky;
+  top:0px;
+}
+
+.topButton {
+  margin-top: 7px;
+  width: 20%;
+
+  background-color: var(--button);
+  align-content:center;
+  line-height: 45px;
+  font-size: 25px;
+  cursor: pointer;
+  filter:drop-shadow(1px 1px 1px gray);
+  border: 2px groove black ;
+}
+
+.topButtonDisabled {
+  margin-top: 7px;
+  width: 20%;
+  text-decoration: line-through;
+  background-color: var(--button);
+  align-content:center;
+  line-height: 45px;
+  font-size: 25px;
+  cursor: none;
+  filter:drop-shadow(1px 1px 1px gray);
+  border: 2px groove black ;
+  opacity:50%
+}
+
+.topButton:nth-of-type(3){
+  width: 10%;
+}
+
+.infoBar{
+  background-color: var(--background-top);
+  min-height:7vh;
+  display:flex;
+  width: 100%;
+  justify-content: space-evenly;
+  position: sticky;
+  position: -webkit-sticky;
+  top:69px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid black;
+}
+
+.infoBlock{
+  background-color: var(--infobox);
+  width: 48%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+  filter:drop-shadow(1px 1px 1px gray);
+}
+
+h3 {
+  font-size: 25px;
+  min-width: 100%;
+  margin: 0px;
+  text-align: center;
+  
+}
+
+.flexList{
+  
+  flex-direction: row;
+  display: flex;
+  flex-wrap: wrap;
+  padding-bottom: 7px;
+  max-height: 30vh;
+  overflow: auto;
+}
+
+.selectedIng {
+  margin: 8px;
+  background-color: var(--ingredient);
+  width: 10%;
+  min-width: 200px;
+  min-height: 40px;
+  margin-top: 1px;
+  font-size: 15px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+ 
+}
+
+.topper{
+  background-color: rgba(128,128,128, 0.1);
+  min-width:100%;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+p {
+  margin-left: 20px;
+  margin-right: 20px;
+  word-wrap: normal;
+}
+
+.helpBox {
+  background-color: gray;
+  width: 400px;
+  position: absolute;
+  z-index: 3;
+  top: 30vh;
+
 }
 
 @keyframes App-logo-spin {
