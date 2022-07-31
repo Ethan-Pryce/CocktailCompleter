@@ -7,7 +7,9 @@ import {myDrinks, myIngredients, myRaw_ing, myDrink_names} from './Data_Sheet.js
 
 
 function App() {
+  //Currently not used but helps create a selection of popular cocktails
   const [drinkList, setDrinkList] = useState([]);
+  //Actual list of drinks
   const [drinks, setDrinks] = useState(myDrinks());
   // just a list of ingredients
   const [ingredients, setIngredients ] = useState(Object.keys(myIngredients()));
@@ -19,12 +21,12 @@ function App() {
   const [makable, setMakable] = useState({})
   //A list of ingredients with related cocktails {"ingreident":[cocktail1, cocktail2],}
   const [recIngredients, setRecIng] = useState(myIngredients());
+  //Toggle the selected box
   const [showSelected, setShowSelected] = useState(false);
-  //A hook for storing recipes for the completer box
-  const [completer, setCompleter] = useState([])
+  //Toggle the help box
   const [showHelp, setHelp] = useState(false);
 
-  
+  // Lookup a cocktail by name
   async function byName(name){
     let url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=";
     let result = await fetch(url + name);
@@ -32,6 +34,7 @@ function App() {
     console.log(data.drinks[0]);
   }
 
+  // Scrape all cocktail names from the DB
   async function allNames(){
     var list_of_names = [];
     for(let k=0;k<10;k++){
@@ -82,7 +85,7 @@ function App() {
       console.log(list_of_names);
   }
   
-
+  // Scrapes the cocktails with ingredients
   async function createDrinkList(){
     var output = {};
     for (let i=0; i < myDrink_names().length; i++){
@@ -115,6 +118,7 @@ function App() {
   console.log(output)
 }
 
+  //Scrapes the ingredients
   async function allIngredients(){
     let temp_ingredients = []
     let count = 0;
@@ -131,6 +135,7 @@ function App() {
     console.log(temp_ingredients);
   }
 
+  //Scrape every single cocktail an ingredient is in
   async function getDrinkByI(){
     var output = {};
     for (let i=0; i < myRaw_ing().length; i++){
@@ -164,16 +169,18 @@ function App() {
     
   }
   
+  //Function for setting the most popular cocktails, removed functionality that might return
   function popular (){
     setDrinkList(["Mojito", "Old Fashioned", "Long Island Tea", "Negroni", "Whiskey Sour", "Dry Martini", "Daiquiri", "Margarita"]);
   }
 
+  // Reloads from the Data_Sheet.js file  
   function initializeIng(){
     myIngredients()
   }
 
-  function updateFromList(){}
 
+  //Count combinations an ingredient has
   function combos(ing){
     if(itemsSelected.length > 0){
       let combos = 0;
@@ -188,6 +195,7 @@ function App() {
     return count;
   }
 
+  //Selects the ingredient clicked
   function select(ing){
     // ing = the ingredient clicked
     // ingredients = a simple list of ingredients
@@ -224,7 +232,7 @@ function App() {
           missingOne[recIngredients[ing][i]] = drinks[recIngredients[ing][i]];
           delete drinks[recIngredients[ing][i]];
           //console.log(recIngredients[ing][i]);
-          console.log("We went down to one");
+          //console.log("We went down to one");
         }
         else if (missingOne.hasOwnProperty([recIngredients[ing][i]])){
           makable[recIngredients[ing][i]] = [];
@@ -240,9 +248,9 @@ function App() {
         }
        
       }
-      console.log(drinks);
-      console.log(missingOne);
-      console.log(makable);
+      //console.log(drinks);
+      //console.log(missingOne);
+      //console.log(makable);
 
       // Copy, splice and update the list of removed ingredients
       var removedIng = [...ingredients];     
@@ -250,7 +258,7 @@ function App() {
       setIngredients(removedIng);
       //console.log(drinks);
 
-      //Tell react that state has been updated this is an anitpatern :(
+      //Tell react that state has been updated this is an antipatern :(
       let temp_drinks = drinks;
       let temp_missing = missingOne;
       let temp_make = makable;
@@ -266,14 +274,11 @@ function App() {
 
   }
 
-  //If deselecting is becomes needed this has been left in place 
+  //If deselecting becomes needed this has been left in place 
   function deselect(ing){
     //console.log(ing);
   }
 
-  function reloadPage(){
-    window.location.reload();
-  }
 
   function reset(){
     setDrinkList([]);
@@ -286,18 +291,21 @@ function App() {
     setCompleter([]);
   }
 
+  //toggle help box
   function toggleHelp(){
     //To prevent both from being opened at once
     setShowSelected(false);
     setHelp(!showHelp);
   }
 
+  //toggle cocktail list
   function toggleSelected(){
     setHelp(false);
     setShowSelected(!showSelected);
     console.log(showSelected);
   }
 
+  //Used for scraping
   useEffect(() => {
     //popular();
     //let temp_dri = myDrink_names();

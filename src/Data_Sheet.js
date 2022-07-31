@@ -1,3 +1,18 @@
+/* Static data generated from TheCocktailDB
+  drinks: a list of each cocktail with ingredients
+  drink_names: a list of cocktails
+  ingredients: a list of ingredients with cocktails they can make
+  raw_ing: a list of ingredients
+
+  functions that return the data
+  myDrinks() 
+  myIngredients() 
+  myRaw_ing() 
+  myDrink_names()
+
+*/
+
+
 var drinks = {
   "252": [
     "151 proof rum",

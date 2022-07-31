@@ -4,7 +4,7 @@ import Drink from './drink.js';
 
 /* Props 
     drinks
-    close = toggleSelected from a level up
+    close = toggleSelected is passed so it can affect its parent
     */
 function Cocktails(props) {
     return <div className='drinkList'>
