@@ -10,7 +10,7 @@ function App() {
   //Currently not used but helps create a selection of popular cocktails
   const [drinkList, setDrinkList] = useState([]);
   //Actual list of drinks
-  const [drinks, setDrinks] = useState(myDrinks());
+  const [drinks, setDrinks] = useState(JSON.parse(JSON.stringify(myDrinks())));
   // just a list of ingredients
   const [ingredients, setIngredients ] = useState(Object.keys(myIngredients()));
   //All selected items
@@ -20,7 +20,7 @@ function App() {
   //Cocktails that can be made 
   const [makable, setMakable] = useState({})
   //A list of ingredients with related cocktails {"ingreident":[cocktail1, cocktail2],}
-  const [recIngredients, setRecIng] = useState(myIngredients());
+  const [recIngredients, setRecIng] = useState(JSON.parse(JSON.stringify(myIngredients())));
   //Toggle the selected box
   const [showSelected, setShowSelected] = useState(false);
   //Toggle the help box
@@ -31,7 +31,7 @@ function App() {
     let url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=";
     let result = await fetch(url + name);
     let data = await result.json();
-    console.log(data.drinks[0]);
+    //console.log(data.drinks[0]);
   }
 
   // Scrape all cocktail names from the DB
@@ -66,7 +66,7 @@ function App() {
     if(data.drinks != null){
       let totalDrinks = data.drinks.length;
       for(let i = 0; i < totalDrinks; i++){
-        console.log(data.drinks);
+        //console.log(data.drinks);
         //let outputString = "";
         //outputString += data.drinks[i].strDrink +  " = [";
         //for(let j = 0; j < 15; j++){
@@ -82,7 +82,7 @@ function App() {
       }
 
       }
-      console.log(list_of_names);
+      //console.log(list_of_names);
   }
   
   // Scrapes the cocktails with ingredients
@@ -95,7 +95,7 @@ function App() {
       try{
 
         let data = await result.json();
-        console.log(data);
+        //console.log(data);
         output[temp] = [];
           for(let j = 0; j < 15; j++){
           let ing = "strIngredient" + j;
@@ -115,7 +115,7 @@ function App() {
       }
 
   }
-  console.log(output)
+  //console.log(output)
 }
 
   //Scrapes the ingredients
@@ -132,7 +132,7 @@ function App() {
       }
       //console.log(data);
     }
-    console.log(temp_ingredients);
+    //console.log(temp_ingredients);
   }
 
   //Scrape every single cocktail an ingredient is in
@@ -148,7 +148,7 @@ function App() {
           output[temp] = [];
           for(let n=0; n<data.drinks.length; n++){
             output[temp].push(data.drinks[n].strDrink);
-            console.log(output); 
+            //console.log(output); 
           }
         }
 
@@ -203,10 +203,13 @@ function App() {
     // recIngredients = reciepes sorted by ingredient
     // drinks = reciepes sorted by drink
 
-      console.log(ing);
+      //console.log(ing);
+      //console.log(drinks);
+      //console.log(missingOne);
+      //console.log(makable);
       //console.log(ingredients);
 
-      // Copy, push and update selecdted
+      // Copy, push and update selected
       var selected = [...itemsSelected];
       selected.push(ing);
       setSelected(selected);
@@ -214,8 +217,8 @@ function App() {
       //console.log(recIngredients[ing].length)
 
       for(let i = 0; i < recIngredients[ing].length; i++){
-        console.log(recIngredients[ing][i]);
-        console.log(drinks[recIngredients[ing][i]]);
+        //console.log(recIngredients[ing][i]);
+        //console.log(drinks[recIngredients[ing][i]]);
         
      
 
@@ -227,7 +230,7 @@ function App() {
           //console.log(removed)
           removed.splice(removed.indexOf(ing),1);
           drinks[recIngredients[ing][i]] = removed;
-          console.log(drinks[recIngredients[ing][i]]);
+          //console.log(drinks[recIngredients[ing][i]]);
           //Direct updating hooks is bad but here we are
           missingOne[recIngredients[ing][i]] = drinks[recIngredients[ing][i]];
           delete drinks[recIngredients[ing][i]];
@@ -269,7 +272,7 @@ function App() {
       setDrinks(temp_drinks);
       setMakable(temp_make);
       setMissingOne(temp_missing);
-
+      //console.log(myDrinks());
       
 
   }
@@ -282,13 +285,14 @@ function App() {
 
   function reset(){
     setDrinkList([]);
-    setDrinks(myDrinks());
+    setDrinks(JSON.parse(JSON.stringify(myDrinks())));
+    console.log(drinks);
     setIngredients(Object.keys(myIngredients()));
     setSelected([]);
     setMissingOne({});
     setMakable({});
-    setRecIng(myIngredients());
-    setCompleter([]);
+    setRecIng(JSON.parse(JSON.stringify(myIngredients())));
+    //setCompleter([]);
   }
 
   //toggle help box
