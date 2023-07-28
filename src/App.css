@@ -189,6 +189,13 @@ button {
   opacity:50%
 }
 
+.textInput {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  height: 50px;
+
+}
+
 .topButton:nth-of-type(3){
   width: 10%;
 }
@@ -298,6 +305,8 @@ p {
     line-height: 20px;
 
   }
+
+
 
   .infoBar{
     top:40px;

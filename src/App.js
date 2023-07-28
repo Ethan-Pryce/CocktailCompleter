@@ -25,6 +25,11 @@ function App() {
   const [showSelected, setShowSelected] = useState(false);
   //Toggle the help box
   const [showHelp, setHelp] = useState(false);
+  //The Search value for filtering
+  const [searchValue, setSearch] = useState("")
+  //Handles the filtered ingredients
+  const [searchedIngredients, setSI] = useState([])
+
 
   // Lookup a cocktail by name
   async function byName(name){
@@ -261,7 +266,7 @@ function App() {
       setIngredients(removedIng);
       //console.log(drinks);
 
-      //Tell react that state has been updated this is an antipatern :(
+      //Tell react that state has been updated this is an antipattern :(
       let temp_drinks = drinks;
       let temp_missing = missingOne;
       let temp_make = makable;
@@ -332,11 +337,26 @@ function App() {
 
 }, [])
 
+function handleSearchChange (e){
+  e.preventDefault();
+  //console.log(e.target.value);
+  setSearch(e.target.value);
+
+  //if(searchValue.length > 0){
+    //console.log("cherry colar".search(".*" + e.target.value +".*" ));
+    setSearch(e.target.value);
+    //console.log("SV:" + searchValue);
+    var caseless = new RegExp(".*" + e.target.value +".*" , "i")
+    setSI(ingredients.filter((ing) => {return ing.search(caseless) != -1} ));
+  //}
+}
+
   return (
     <div className="App">
 
         <div className='topBar'>
         <div id="showButton" className={Object.keys(makable).length > 0 ? 'topButton' : 'topButtonDisabled'} onClick={toggleSelected} >Drinks</div>
+        <input type='text' id="textInput" className='textInput' placeholder="Filter" value={searchValue} onChange={handleSearchChange}></input>
         <div id="resetButton" className='topButton' onClick={reset} >Reset</div>
         <div id="questionButton" className='topButton' onClick={toggleHelp}>&#10067;</div>
         </div>
@@ -353,7 +373,7 @@ function App() {
           </div>
         </div>
 
-        {ingredients.map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>)}
+        {searchValue.length > 0 ? searchedIngredients.map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>) : ingredients.map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>)}
         {drinkList.map((drink) => <Drink name={drink} key={drink}></Drink>)}
         {(showSelected && Object.keys(makable).length > 0 )  ? <Cocktails drinks={makable} close={toggleSelected}></Cocktails>
         : null}
