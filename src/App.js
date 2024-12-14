@@ -1,341 +1,94 @@
+import logo from './logo.svg';
 import './App.css';
+import React, {useState, useEffect} from 'react';
+import {myDrinks, myIngredients, myRaw_ing, myDrink_names, drinkID} from './Data_Sheet.js';
+import Ingredient from './ingredient.js'
 import Drink from './drink.js';
 import Cocktails from './cocktails.js'
-import Ingredient from './Ingredient.js'
-import React, {useState, useEffect} from 'react';
-import {myDrinks, myIngredients, myRaw_ing, myDrink_names} from './Data_Sheet.js';
-
 
 function App() {
-  //Currently not used but helps create a selection of popular cocktails
-  const [drinkList, setDrinkList] = useState([]);
-  //Actual list of drinks
-  const [drinks, setDrinks] = useState(JSON.parse(JSON.stringify(myDrinks())));
-  // just a list of ingredients
-  const [ingredients, setIngredients ] = useState(Object.keys(myIngredients()));
-  //All selected items
-  const [itemsSelected, setSelected] = useState([]);
-  //Missing one ingredient for the reciepe
-  const [missingOne, setMissingOne] = useState({});
-  //Cocktails that can be made 
-  const [makable, setMakable] = useState({})
-  //A list of ingredients with related cocktails {"ingreident":[cocktail1, cocktail2],}
-  const [recIngredients, setRecIng] = useState(JSON.parse(JSON.stringify(myIngredients())));
-  //Toggle the selected box
-  const [showSelected, setShowSelected] = useState(false);
-  //Toggle the help box
-  const [showHelp, setHelp] = useState(false);
-  //The Search value for filtering
-  const [searchValue, setSearch] = useState("")
-  //Handles the filtered ingredients
-  const [searchedIngredients, setSI] = useState([])
+//Actual list of drinks
+const [drinks, setDrinks] = useState(JSON.parse(JSON.stringify(myDrinks())));
+//console.log(drinks)
+//console.log(Object.keys(drinks))
+
+// just a list of ingredients
+const [ingredients, setIngredients ] = useState(Object.keys(myIngredients()));
+// Ingredients by popularity, an array of [name, drinks]
+const [frequencyIng, setFrequencyIng] = useState([]);
+
+// Drinks as an array
+const [sortableDrinks, setSortableDrinks] = useState([]);
+
+//All selected items
+const [itemsSelected, setSelected] = useState([]);
+// Excluded Ingredients
+const [itemsExcluded, setExcluded] = useState([]);
+//Missing one ingredient for the reciepe
+const [missingOne, setMissingOne] = useState({});
+//Cocktails that can be made 
+const [makable, setMakable] = useState({})
+//A list of ingredients with related cocktails {"ingreident":[cocktail1, cocktail2],}
+const [recIngredients, setRecIng] = useState(JSON.parse(JSON.stringify(myIngredients())));
+//The Search value for filtering
+const [searchValue, setSearch] = useState("");
+//Handles the filtered ingredients
+const [searchedIngredients, setSI] = useState([]);
+//For looking up links
+const [drinkIDs, setDID] = useState(JSON.parse(JSON.stringify(drinkID())));
+
+//Track the sort value of the ingredients
+const [ingSearchSort, setISS] = useState(0);
+//Track the sort value of the drinks
+const [drinkSearchSort, setDSS] = useState(0);
 
 
-  // Lookup a cocktail by name
-  async function byName(name){
-    let url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=";
-    let result = await fetch(url + name);
-    let data = await result.json();
-    //console.log(data.drinks[0]);
-  }
+//console.log(ingredients);
 
-  // Scrape all cocktail names from the DB
-  async function allNames(){
-    var list_of_names = [];
-    for(let k=0;k<10;k++){
-      let result = await fetch("https://www.thecocktaildb.com/api/json/v1/1/search.php?f=" + k);
-    let data = await result.json();
-    if(data.drinks != null){
-      let totalDrinks = data.drinks.length;
-      console.log(data.drinks);
-      for(let i = 0; i < totalDrinks; i++){
-        //let outputString = "";
-        //outputString += data.drinks[i].strDrink +  " = [";
-        //for(let j = 0; j < 15; j++){
-        //  let ing = "strIngredient" + j;
-        //  if (data.drinks[i][ing] && data.drinks[i][ing] != null){
-        //      outputString += ", " + data.drinks[i][ing];
-        //  }
-        list_of_names.push(data.drinks[i].strDrink);
-        //console.log(list_of_names);
-        }
-        //outputString += "];";
-        //console.log(list_of_names);
+ //Count combinations an ingredient has
+ function combos(ing){
+  /*
+  if(itemsSelected.length > 0){
+    let combos = 0;
+    for(let i = 0; i<recIngredients[ing].length; i++){
+      if (missingOne.hasOwnProperty(recIngredients[ing][i])){
+        combos++;
       }
-  }
-
-    for(let n=0;n<26;n++){
-    let letter = String.fromCharCode(97 + n);
-    let result = await fetch("https://www.thecocktaildb.com/api/json/v1/1/search.php?f=" + letter);
-    let data = await result.json();
-    if(data.drinks != null){
-      let totalDrinks = data.drinks.length;
-      for(let i = 0; i < totalDrinks; i++){
-        //console.log(data.drinks);
-        //let outputString = "";
-        //outputString += data.drinks[i].strDrink +  " = [";
-        //for(let j = 0; j < 15; j++){
-        //  let ing = "strIngredient" + j;
-        //  if (data.drinks[i][ing] && data.drinks[i][ing] != null){
-        //      outputString += ", " + data.drinks[i][ing];
-        //  }
-        list_of_names.push(data.drinks[i].strDrink);
-        //console.log(list_of_names);
-        }
-        //outputString += "];";
-        
-      }
-
-      }
-      //console.log(list_of_names);
-  }
-  
-  // Scrapes the cocktails with ingredients
-  async function createDrinkList(){
-    var output = {};
-    for (let i=0; i < myDrink_names().length; i++){
-      let temp = myDrink_names()[i];
-      let result = await fetch("https://www.thecocktaildb.com/api/json/v1/1/search.php?s=" + temp);
-      //console.log(result);
-      try{
-
-        let data = await result.json();
-        //console.log(data);
-        output[temp] = [];
-          for(let j = 0; j < 15; j++){
-          let ing = "strIngredient" + j;
-          if (data.drinks[0][ing] && data.drinks[0][ing] != null){
-            output[temp].push(data.drinks[0][ing]);
-            
-          }
-        }
-        if (output[temp].length < 1){
-          console.log(temp);
-        }
-
-        
-      }
-      catch(e){
-        console.error(e);
-      }
-
-  }
-  //console.log(output)
+    }
+    return combos;
+  }*/
+  var count = myIngredients()[ing].length;
+  return count;
 }
 
-  //Scrapes the ingredients
-  async function allIngredients(){
-    let temp_ingredients = []
-    let count = 0;
-    for(let n=0;n<620;n++){
-      let result = await fetch("https://www.thecocktaildb.com/api/json/v1/1/lookup.php?iid=" + n);
-      let data = await result.json();
-      
-      if(data.ingredients != null){
-        count += 1;
-        temp_ingredients.push(data.ingredients[0].strIngredient);
-      }
-      //console.log(data);
-    }
-    //console.log(temp_ingredients);
+//Convert ingredients to an array to sort by popularity 
+function ingToPop(){
+ var ingNames = Object.keys(myIngredients());
+ //console.log(ingNames);
+ var temp = [];
+ for (var i = 0; i < ingNames.length; i++){
+  temp.push([ingNames[i], myIngredients()[ingNames[i]].length])
+ }
+ setFrequencyIng(temp);
+//console.log(frequencyIng);
+}
+
+//convert drinks to an array that is usable by sort
+function drinkToArray(){
+  var drinkNames = Object.keys(drinks);
+  var temp = [];
+  console.log(drinkNames);
+  console.log(drinks["Applejack"])
+  for (var i = 0; i < drinkNames.length; i++){
+    var item = [drinkNames[i]];
+    item.push(drinks[drinkNames[i]]);
+    temp.push(item);
   }
+  console.log(temp);
+  setSortableDrinks(temp);
+  console.log(sortableDrinks);
+}
 
-  //Scrape every single cocktail an ingredient is in
-  async function getDrinkByI(){
-    var output = {};
-    for (let i=0; i < myRaw_ing().length; i++){
-      let temp = myRaw_ing()[i];
-      let result = await fetch("https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=" + temp);
-      //console.log(result);
-      try{
-        let data = await result.json();
-        if(data.drinks.length > 0){
-          output[temp] = [];
-          for(let n=0; n<data.drinks.length; n++){
-            output[temp].push(data.drinks[n].strDrink);
-            //console.log(output); 
-          }
-        }
-
-        
-      }
-      catch(e){
-        console.error(e);
-      }
-      
-      if(i%15 == 0 ){}
-       
-      
-        
-      
-      
-    }
-    
-    
-  }
-  
-  //Function for setting the most popular cocktails, removed functionality that might return
-  function popular (){
-    setDrinkList(["Mojito", "Old Fashioned", "Long Island Tea", "Negroni", "Whiskey Sour", "Dry Martini", "Daiquiri", "Margarita"]);
-  }
-
-  // Reloads from the Data_Sheet.js file  
-  function initializeIng(){
-    myIngredients()
-  }
-
-
-  //Count combinations an ingredient has
-  function combos(ing){
-    if(itemsSelected.length > 0){
-      let combos = 0;
-      for(let i = 0; i<recIngredients[ing].length; i++){
-        if (missingOne.hasOwnProperty(recIngredients[ing][i])){
-          combos++;
-        }
-      }
-      return combos;
-    }
-    var count = myIngredients()[ing].length;
-    return count;
-  }
-
-  //Selects the ingredient clicked
-  function select(ing){
-    // ing = the ingredient clicked
-    // ingredients = a simple list of ingredients
-    // selected = the list of selected items
-    // recIngredients = reciepes sorted by ingredient
-    // drinks = reciepes sorted by drink
-
-      //console.log(ing);
-      //console.log(drinks);
-      //console.log(missingOne);
-      //console.log(makable);
-      //console.log(ingredients);
-
-      // Copy, push and update selected
-      var selected = [...itemsSelected];
-      selected.push(ing);
-      setSelected(selected);
-
-      //console.log(recIngredients[ing].length)
-
-      for(let i = 0; i < recIngredients[ing].length; i++){
-        //console.log(recIngredients[ing][i]);
-        //console.log(drinks[recIngredients[ing][i]]);
-        
-     
-
-
-
-        
-        if (drinks.hasOwnProperty([recIngredients[ing][i]]) && drinks[recIngredients[ing][i]].length == 2){
-          let removed = [...drinks[recIngredients[ing][i]]];
-          //console.log(removed)
-          removed.splice(removed.indexOf(ing),1);
-          drinks[recIngredients[ing][i]] = removed;
-          //console.log(drinks[recIngredients[ing][i]]);
-          //Direct updating hooks is bad but here we are
-          missingOne[recIngredients[ing][i]] = drinks[recIngredients[ing][i]];
-          delete drinks[recIngredients[ing][i]];
-          //console.log(recIngredients[ing][i]);
-          //console.log("We went down to one");
-        }
-        else if (missingOne.hasOwnProperty([recIngredients[ing][i]])){
-          makable[recIngredients[ing][i]] = [];
-          delete missingOne[recIngredients[ing][i]];
-
-        }
-        else{
-          let removed = [...drinks[recIngredients[ing][i]]];
-          //console.log(removed)
-          removed.splice(removed.indexOf(ing),1);
-          drinks[recIngredients[ing][i]] = removed;
-          console.log(drinks[recIngredients[ing][i]]);
-        }
-       
-      }
-      //console.log(drinks);
-      //console.log(missingOne);
-      //console.log(makable);
-
-      // Copy, splice and update the list of removed ingredients
-      var removedIng = [...ingredients];     
-      removedIng.splice(ingredients.indexOf(ing),1);
-      setIngredients(removedIng);
-      //console.log(drinks);
-
-      //Tell react that state has been updated this is an antipattern :(
-      let temp_drinks = drinks;
-      let temp_missing = missingOne;
-      let temp_make = makable;
-      setDrinks({});
-      setMakable({});
-      setMissingOne({});
-      
-      setDrinks(temp_drinks);
-      setMakable(temp_make);
-      setMissingOne(temp_missing);
-      //console.log(myDrinks());
-      
-
-  }
-
-  //If deselecting becomes needed this has been left in place 
-  function deselect(ing){
-    //console.log(ing);
-  }
-
-
-  function reset(){
-    setDrinkList([]);
-    setDrinks(JSON.parse(JSON.stringify(myDrinks())));
-    console.log(drinks);
-    setIngredients(Object.keys(myIngredients()));
-    setSelected([]);
-    setMissingOne({});
-    setMakable({});
-    setRecIng(JSON.parse(JSON.stringify(myIngredients())));
-    //setCompleter([]);
-  }
-
-  //toggle help box
-  function toggleHelp(){
-    //To prevent both from being opened at once
-    setShowSelected(false);
-    setHelp(!showHelp);
-  }
-
-  //toggle cocktail list
-  function toggleSelected(){
-    setHelp(false);
-    setShowSelected(!showSelected);
-    console.log(showSelected);
-  }
-
-  //Used for scraping
-  useEffect(() => {
-    //popular();
-    //let temp_dri = myDrink_names();
-    //console.log(temp_dri[0])
-    //let temp_arr = []
-    //for (const x in temp_dri) {
-    //  temp_arr.push(drinks[temp_dri[x]]);
-    //  if (drinks[temp_dri[x]] == null) {
-    //    console.log(temp_dri[x]);
-    //    
-    //  }
-    //}
-    //console.log(temp_arr)
-    //console.log(drinks);
-    //allNames();
-    //allIngredients();
-    //getDrinkByI();
-    //createDrinkList();
-    //initializeIng();
-
-}, [])
 
 function handleSearchChange (e){
   e.preventDefault();
@@ -351,39 +104,259 @@ function handleSearchChange (e){
   //}
 }
 
+//Selects the ingredient clicked
+function select(ing){
+  // Copy, push and update selected
+  var selected = [...itemsSelected];
+  selected.push(ing);
+  setSelected(selected);
+  
+  var index = ingredients.indexOf(ing);
+  var tempIng = ingredients
+  if (index !== -1) {
+    tempIng.splice(index, 1);
+  }
+  setIngredients(tempIng);
+
+}
+
+// Lets move it to the exclude
+function exclude(ing){
+  var excluded = [...itemsExcluded];
+  excluded.push(ing);
+  setExcluded(excluded);
+
+
+  var index = itemsSelected.indexOf(ing);
+  var tempIng = itemsSelected;
+  if (index !== -1) {
+    tempIng.splice(index, 1);
+  }
+  setSelected(tempIng);
+}
+
+// Move it back to the ingredients
+function returnIng(ing){
+  var ingre = [...ingredients];
+  ingre.push(ing);
+  setIngredients(ingre);
+
+
+
+  var index = itemsExcluded.indexOf(ing);
+  var tempIng = itemsExcluded;
+  if (index !== -1) {
+    tempIng.splice(index, 1);
+  }
+  setExcluded(tempIng);
+
+}
+
+// Used to sort by the number of items in the matching array per item
+function compareIngPopularity(a, b){
+  if (myIngredients()[a].length == myIngredients()[b].length){
+    return 0;
+  }
+  else if (myIngredients()[a].length > myIngredients()[b].length){
+    return -1;
+
+  }
+  else{
+   return 1;
+  }
+}
+
+//used to sort by the number of missing ingredients
+function compareMissing(a,b){
+  let missingA = drinks[a].filter(x => !itemsSelected.includes(x)).length;
+  let missingB = drinks[b].filter(x => !itemsSelected.includes(x)).length;
+
+  if (missingA == missingB){
+    if (drinks[a].length == drinks[b].length){
+      return 0
+    }
+    else if (drinks[a].length > drinks[b].length){
+      return 1;
+  
+    }
+    else{
+     return -1;
+    }
+  }
+  else if (missingA > missingB){
+    return 1;
+  }
+  return -1;
+
+}
+
+// used to sort by the number of total ingredients
+function compareComponents(a,b){
+  if (drinks[a].length == drinks[b].length){
+    let missingA = drinks[a].filter(x => !itemsSelected.includes(x)).length;
+    let missingB = drinks[b].filter(x => !itemsSelected.includes(x)).length;
+
+    if (missingA == missingB){
+      return 0;
+    }
+    else if (missingA > missingB){
+      return 1;
+    }
+  return -1;
+  }
+  else if (drinks[a].length > drinks[b].length){
+    return 1;
+
+  }
+  else{
+   return -1;
+  }
+}
+
+// Returns true if a drink has an included ingredient and none of the excluded ingredients
+function viableDrink(drinkName){
+  
+  for (var i = 0; i<itemsExcluded.length; i++)
+  {
+    if (drinks[drinkName].includes(itemsExcluded[i])){
+      return false;
+    }
+
+  }
+
+  for (var i = 0; i< itemsSelected.length; i++)
+    {
+      if (drinks[drinkName].includes(itemsSelected[i])){
+        //console.log(drinkName);
+        return true;
+      }
+
+    }
+
+    return false;
+}
+
+//Check if a or b concludes more recipeies 
+function compareConcluder(a,b){
+  var countA = countConclusions(a);
+  var countB = countConclusions(b);
+
+  if (countA == countB){
+    return 0;
+  }
+  else if( countA > countB ){
+    return -1;
+
+  }
+  else{
+    return 1;
+  }
+}
+
+//Check if any of the reciepes are 1 off and if so if this completes them.
+function countConclusions(ing){
+  var count = 0;
+  //console.log(ing);
+
+  for (var i = 0; i < myIngredients()[ing].length; i++ ){ 
+    //console.log(myIngredients()[ing][i]);  
+    var currDrink = myDrinks()[myIngredients()[ing][i]];
+      var drinkLen = currDrink.length; 
+      for (var k = 0; k < currDrink.length; k++){
+        if (itemsExcluded.includes(currDrink[k]) ){
+          count = 99;
+          break;
+        }
+        else if(itemsSelected.includes(currDrink[k])){
+          
+          drinkLen -= 1;
+        }
+      }
+      if (drinkLen == 1){
+        count += 1;
+      }
+    }
+
+    return count;
+}
+
+  //Used for running a function on load
+  useEffect(() => {
+    ingToPop();
+    drinkToArray();
+    console.log(myDrink_names());
+      //your code to be executed after 1 second
+
+ 
+    
+}, [])
+
   return (
     <div className="App">
+      
+        
+        <div id="ingHead"> 
+          <h3 className={ingSearchSort == 0 ? "active-header" : "inactive-header" }  onClick={() => setISS(0)} >Popularity</h3>
+          <h3 className={ingSearchSort == 1 ? "active-header" : "inactive-header" }  onClick={() => setISS(1)} >Alphabetical</h3>
+          <h3 className={ingSearchSort == 2 ? "active-header" : "inactive-header" }  onClick={() => setISS(2)} >Concludes</h3>
+          
 
-        <div className='topBar'>
-        <div id="showButton" className={Object.keys(makable).length > 0 ? 'topButton' : 'topButtonDisabled'} onClick={toggleSelected} >Drinks</div>
-        <input type='text' id="textInput" className='textInput' placeholder="Filter" value={searchValue} onChange={handleSearchChange}></input>
-        <div id="resetButton" className='topButton' onClick={reset} >Reset</div>
-        <div id="questionButton" className='topButton' onClick={toggleHelp}>&#10067;</div>
         </div>
-        <div className='infoBar'>
-          <div className='infoBlock'>
-            <div className='topper'><h3>Selected</h3></div>
-            <div className="flexList">{itemsSelected.map((sel) => <div className="selectedIng" key={sel} onClick={() =>deselect(sel)}> {sel}</div>)}</div>
-            </div>
-          <div className='infoBlock'>
-              <div className='topper'><h3>Completes a Recipe</h3></div>
-              <div className="flexList">
-              {Object.keys(missingOne).length ? ingredients.map((ing) => (combos(ing) > 0 ? <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient> : null)) : null}
+        <div className='ingList'>
+          {searchValue.length > 0 ? 
+          // Search value is true
+          ingSearchSort == 1 ?  searchedIngredients.sort().map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>) :
+          ingSearchSort == 2 ? searchedIngredients.sort(compareConcluder).map((ing) => <Ingredient name={ing} key={ing} num={"+" + countConclusions(ing)} onClick={() => select(ing)}></Ingredient>):
+          searchedIngredients.sort(compareIngPopularity).map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>) :
+          
+          //Search value is false
+          ingSearchSort == 1 ? ingredients.sort().map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>):
+          ingSearchSort == 2 ?  ingredients.sort(compareConcluder).map((ing) => <Ingredient name={ing} key={ing} num={"+" + countConclusions(ing)} onClick={() => select(ing)}></Ingredient>):
+          ingredients.sort(compareIngPopularity).map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>)}
+          </div>
+      
+          <input type='text' id="textInput" className='textInput' placeholder="Filter" value={searchValue} onChange={handleSearchChange}></input>
+      <div id="filters">
+        <div id="includeDiv" className='filterDiv'>
+        <h3>Include</h3>
+        <div className='filterFlex'>
+        {itemsSelected.length > 0 ?  itemsSelected.map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => exclude(ing)}></Ingredient>) : <span>...</span> }
+        </div>
+        </div>
+   
+        <div id="includeDiv" className='filterDiv'>
+        <h3 >Exclude</h3>
+        <div className='filterFlex'>
+        {itemsExcluded.length > 0 ?  itemsExcluded.map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => returnIng(ing)}></Ingredient>) : <span>...</span>  }
+        </div>
+        </div>
+
+
+
+
+      </div>
+
+      
+      
+      <div id="results">
+        <div id="resultHead"> 
+          <h3 className={drinkSearchSort == 0 ? "active-header" : "inactive-header" }  onClick={() => setDSS(0)}>Name</h3>
+          <h3 className={drinkSearchSort == 1 ? "active-header" : "inactive-header" } onClick={() => setDSS(1)}>Missing</h3>
+          <h3 className={drinkSearchSort == 2 ? "active-header" : "inactive-header" }  onClick={() => setDSS(2)}>Total Parts</h3>
+          
+        </div>
+            <div className="cocktailList">
+              {/* Filtering is easy https://upmostly.com/tutorials/react-filter-filtering-arrays-in-react-with-examples */
+              drinkSearchSort == 0 ? Object.keys(drinks).filter((drink) => viableDrink(drink)).map((drink) => <Cocktails name={drink} key={drink} num={-1} onClick={() => window.open('https://www.thecocktaildb.com/drink/' + drinkIDs[drink], '_blank')}></Cocktails>) :
+              drinkSearchSort == 1 ? Object.keys(drinks).filter((drink) => viableDrink(drink)).sort(compareMissing).map((drink) => <Cocktails name={drink} key={drink} num={drinks[drink].filter(x => !itemsSelected.includes(x)).length} onClick={() => window.open('https://www.thecocktaildb.com/drink/' + drinkIDs[drink], '_blank')}></Cocktails>)
+              : Object.keys(drinks).filter((drink) => viableDrink(drink)).sort(compareComponents).map((drink) => <Cocktails name={drink} key={drink} num={drinks[drink].length} onClick={() => window.open('https://www.thecocktaildb.com/drink/' + drinkIDs[drink], '_blank')}></Cocktails>)
+              }
+              
               </div>
           </div>
-        </div>
+        
+      </div>
 
-        {searchValue.length > 0 ? searchedIngredients.map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>) : ingredients.map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>)}
-        {drinkList.map((drink) => <Drink name={drink} key={drink}></Drink>)}
-        {(showSelected && Object.keys(makable).length > 0 )  ? <Cocktails drinks={makable} close={toggleSelected}></Cocktails>
-        : null}
-        {showHelp ? <div className='helpBox' onClick={toggleHelp}>
-        <div className="closer" onClick={toggleHelp}>&#10060;</div>
-      <p>Select some ingredients and have the tiny bartender living in the website tell you how many drinks each ingredient would add if you bought it.</p>
-          
-        </div> : null}
-
-    </div>
   );
 }
 

@@ -9,10 +9,11 @@ import Recipe from "./Recipe";
     function Drink(props) {
         const [loaded, setLoaded] = useState(0);
         const [drinkInfo, setDrink] = useState();
-        const [background, setBackground] = useState("https://i0.wp.com/lakerlutznews.com/lln/wp-content/uploads/2019/10/water.jpg?fit=1200%2C800&ssl=1");
+        const [background, setBackground] = useState("https://cdn.hswstatic.com/gif/water-update.jpg");
         const [showReciepe, setShow] = useState(false);
     
-        async function byName(name){
+       /* async function byName(name){
+            console.log(name)
             let url = "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=";
             let result = await fetch(url + name);
             let data = await result.json();
@@ -25,6 +26,7 @@ import Recipe from "./Recipe";
           useEffect(() => {
             byName(props.name);
         }, [])
+        */
     
        function toggleRec(){
         setShow(!showReciepe);

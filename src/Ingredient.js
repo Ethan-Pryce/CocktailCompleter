@@ -10,7 +10,7 @@ import ReactDOM from 'react-dom/client';
 function Ingredient(props) {
 
    
-    return <div className="displayIng"><div className='ingredient' onClick={props.onClick}>{props.name}</div><div className='countIng'>{ (props.num > 0) ? props.num : ""}</div></div>
+    return <div className="displayIng"><div className='ingredient' onClick={props.onClick}>{props.name}</div><div className='countIng' onClick={props.onClick}>{ (props.num > 0) ? props.num : ""}</div></div>
 }
 
   export default Ingredient
