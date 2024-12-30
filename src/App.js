@@ -42,7 +42,6 @@ const [ingSearchSort, setISS] = useState(0);
 //Track the sort value of the drinks
 const [drinkSearchSort, setDSS] = useState(0);
 
-
 //console.log(ingredients);
 
  //Count combinations an ingredient has
@@ -117,6 +116,13 @@ function select(ing){
     tempIng.splice(index, 1);
   }
   setIngredients(tempIng);
+  
+  var indexSI = searchedIngredients.indexOf(ing);
+  var tempIngSI = searchedIngredients
+  if (indexSI !== -1) {
+    tempIngSI.splice(indexSI, 1);
+  }
+  setSI(tempIngSI);
 
 }
 
@@ -149,6 +155,13 @@ function returnIng(ing){
     tempIng.splice(index, 1);
   }
   setExcluded(tempIng);
+
+  var caseless = new RegExp(".*" + searchValue +".*" , "i");
+  if(caseless.test(ing)){
+    var temp = [...searchedIngredients];
+    temp.push(ing)
+    setSI(temp);
+  }
 
 }
 
@@ -280,11 +293,49 @@ function countConclusions(ing){
     return count;
 }
 
+// Count how many of the included ingredients it uses out of its total reciepe length
+function countPU(drink){
+  var count = 0;
+  // get the drink with ingredients
+  // count how many of the included ingredients are used
+  // 
+  var currIng = drinks[drink];
+
+  for (var i = 0; i < currIng.length; i++){
+    if (itemsSelected.includes(currIng[i])){
+      count += 1;
+    }
+  }
+
+  return count;
+}
+
+//a hacky fix for a strange bug
+function displayPU(drink){}
+
+// Sort by the counted 
+function sortPU(a, b){
+  let APU = countPU(a) / drinks[a].length;
+  let BPU = countPU(b) / drinks[b].length;
+
+  if (APU == BPU){
+    return 0
+  }
+  if ( APU > BPU){
+    return -1
+  }
+  else 
+  {
+    return 1
+  }
+
+}
+
   //Used for running a function on load
   useEffect(() => {
     ingToPop();
     drinkToArray();
-    console.log(myDrink_names());
+    //console.log(myDrink_names());
       //your code to be executed after 1 second
 
  
@@ -313,6 +364,8 @@ function countConclusions(ing){
           ingSearchSort == 1 ? ingredients.sort().map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>):
           ingSearchSort == 2 ?  ingredients.sort(compareConcluder).map((ing) => <Ingredient name={ing} key={ing} num={"+" + countConclusions(ing)} onClick={() => select(ing)}></Ingredient>):
           ingredients.sort(compareIngPopularity).map((ing) => <Ingredient name={ing} key={ing} num={combos(ing)} onClick={() => select(ing)}></Ingredient>)}
+          
+          
           </div>
       
           <input type='text' id="textInput" className='textInput' placeholder="Filter" value={searchValue} onChange={handleSearchChange}></input>
@@ -343,13 +396,15 @@ function countConclusions(ing){
           <h3 className={drinkSearchSort == 0 ? "active-header" : "inactive-header" }  onClick={() => setDSS(0)}>Name</h3>
           <h3 className={drinkSearchSort == 1 ? "active-header" : "inactive-header" } onClick={() => setDSS(1)}>Missing</h3>
           <h3 className={drinkSearchSort == 2 ? "active-header" : "inactive-header" }  onClick={() => setDSS(2)}>Total Parts</h3>
+          <h3 className={drinkSearchSort == 3 ? "active-header" : "inactive-header" }  onClick={() => setDSS(3)}>% Included</h3>
           
         </div>
             <div className="cocktailList">
               {/* Filtering is easy https://upmostly.com/tutorials/react-filter-filtering-arrays-in-react-with-examples */
               drinkSearchSort == 0 ? Object.keys(drinks).filter((drink) => viableDrink(drink)).map((drink) => <Cocktails name={drink} key={drink} num={-1} onClick={() => window.open('https://www.thecocktaildb.com/drink/' + drinkIDs[drink], '_blank')}></Cocktails>) :
-              drinkSearchSort == 1 ? Object.keys(drinks).filter((drink) => viableDrink(drink)).sort(compareMissing).map((drink) => <Cocktails name={drink} key={drink} num={drinks[drink].filter(x => !itemsSelected.includes(x)).length} onClick={() => window.open('https://www.thecocktaildb.com/drink/' + drinkIDs[drink], '_blank')}></Cocktails>)
-              : Object.keys(drinks).filter((drink) => viableDrink(drink)).sort(compareComponents).map((drink) => <Cocktails name={drink} key={drink} num={drinks[drink].length} onClick={() => window.open('https://www.thecocktaildb.com/drink/' + drinkIDs[drink], '_blank')}></Cocktails>)
+              drinkSearchSort == 1 ? Object.keys(drinks).filter((drink) => viableDrink(drink)).sort(compareMissing).map((drink) => <Cocktails name={drink} key={drink} num={drinks[drink].filter(x => !itemsSelected.includes(x)).length} onClick={() => window.open('https://www.thecocktaildb.com/drink/' + drinkIDs[drink], '_blank')}></Cocktails>): 
+              drinkSearchSort == 2 ? Object.keys(drinks).filter((drink) => viableDrink(drink)).sort(compareComponents).map((drink) => <Cocktails name={drink} key={drink} num={drinks[drink].length} onClick={() => window.open('https://www.thecocktaildb.com/drink/' + drinkIDs[drink], '_blank')}></Cocktails>):
+              Object.keys(drinks).filter((drink) => viableDrink(drink)).sort(sortPU).map((drink) => <Cocktails name={drink} key={drink} num={countPU(drink) + "/" + drinks[drink].length} onClick={() => window.open('https://www.thecocktaildb.com/drink/' + drinkIDs[drink], '_blank')}></Cocktails>)
               }
               
               </div>

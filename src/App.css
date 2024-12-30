@@ -36,6 +36,8 @@ element {
   }
 }
 
+
+
 .App-header {
   /*background-color: #282c34;*/
   min-height: 100vh;
@@ -184,7 +186,7 @@ body {
 .displayIng {
   margin-left: 0px;
   margin-right: 5px;
-  width: 10%;
+  max-width: 150px;
   min-width: 150px;
   background-color:  var(--ingredient);
   background-repeat: no-repeat;
@@ -255,4 +257,26 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+
+
+@media only screen and (max-width:325px) {
+  .displayIng{
+    font-size: min(4vw,15px);
+    margin-right: 2px;
+    width: auto;
+    min-width: 90px;
+  }
+  h3 {
+    font-size: medium;
+
+  }
+
+}
+
+@media only screen and (max-width:215px) {
+  h3 {
+    font-size: small;
+  }
+
 }
