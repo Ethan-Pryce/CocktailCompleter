@@ -277,7 +277,7 @@ function countConclusions(ing){
       var drinkLen = currDrink.length; 
       for (var k = 0; k < currDrink.length; k++){
         if (itemsExcluded.includes(currDrink[k]) ){
-          count = 99;
+          //count = 99;
           break;
         }
         else if(itemsSelected.includes(currDrink[k])){
